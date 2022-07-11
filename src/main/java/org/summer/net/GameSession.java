@@ -3,16 +3,19 @@ package org.summer.net;
 import io.netty.channel.Channel;
 import org.summer.database.entity.Player;
 import org.summer.game.player.PlayerCache;
+import org.summer.net.packet.Packet;
 
 public class GameSession {
     private Channel channel;
     //没有
-    private Long accountId;
-    private SessionState state;
+    private String accountId;
+    private volatile SessionState state;
     private volatile PlayerCache player;
 
     public enum SessionState {
-        INIT, PENDING_TOKEN, PENDING_LOGIN, LOADING_DATA, ACTIVE
+        PENDING_LOGIN,
+        LOADING_LOGIN_DATA,
+        ACTIVE
     }
 
     public SessionState getState() {
@@ -22,4 +25,13 @@ public class GameSession {
     public PlayerCache getPlayer() {
         return player;
     }
+
+    public void kick() {
+
+    }
+
+    public void sendPacket(Packet packet) {
+        channel.writeAndFlush(packet);
+    }
+
 }

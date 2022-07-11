@@ -10,4 +10,8 @@
     <insert id="insert" parameterType="org.summer.database.entity.Player">
         insert into `player`(id, nickname) values(#{id}, #{nickname})
     </insert>
+
+    <select id="selectByAccountId" resultType="org.summer.database.entity.Player">
+        select * from `player` where account_id = #{accountId}
+    </select>
 </mapper>

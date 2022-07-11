@@ -10,6 +10,13 @@ import org.summer.net.GameSession;
 @Data
 public class PlayerCache {
     private Long id;
+    private String accountId;
+    private PlayerCacheState state;
     private Player player;
     private GameSession session;
+
+    public enum PlayerCacheState {
+        LOADING, LOADED
+    }
+
 }

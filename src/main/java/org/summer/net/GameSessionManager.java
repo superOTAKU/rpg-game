@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentMap;
 
 public class GameSessionManager {
     private final ConcurrentMap<Channel, GameSession> sessionMap = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, GameSession> accountSessionMap = new ConcurrentHashMap<>();
 
     public GameSession getSession(Channel channel) {
         return sessionMap.get(channel);
@@ -15,6 +16,10 @@ public class GameSessionManager {
 
     public GameSession getSession(ChannelHandlerContext ctx) {
         return sessionMap.get(ctx.channel());
+    }
+
+    public GameSession getSessionByAccountId(String accountId) {
+        return accountSessionMap.get(accountId);
     }
 
     public void addSession(Channel channel, GameSession session) {

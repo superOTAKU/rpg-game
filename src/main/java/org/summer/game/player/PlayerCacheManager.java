@@ -8,7 +8,7 @@ public class PlayerCacheManager {
     private final ConcurrentMap<String, PlayerCache> accountPlayerMap = new ConcurrentHashMap<>();
 
     public PlayerCache getByAccountId(String accountId) {
-        return playerMap.get(accountId);
+        return accountPlayerMap.get(accountId);
     }
 
     private static final PlayerCacheManager INSTANCE = new PlayerCacheManager();

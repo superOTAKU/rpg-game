@@ -74,9 +74,9 @@ public class DatabaseManager {
          });
     }
 
-    public void executeSync(Consumer<SqlSession> consumer) {
+    public <T> T executeSync(Function<SqlSession, T> consumer) {
         try (var session = sessionFactory.openSession(true)) {
-            consumer.accept(session);
+            return consumer.apply(session);
         }
     }
 
