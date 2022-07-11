@@ -9,9 +9,9 @@ import java.util.concurrent.ConcurrentMap;
 //管理所有的业务线程池
 public class Executors {
     //用户线程组
-    private final DefaultEventExecutorGroup playerGroup = new DefaultEventExecutorGroup(1);
+    private final DefaultEventExecutorGroup playerGroup = new DefaultEventExecutorGroup(4);
     //场景线程组
-    private final DefaultEventExecutorGroup sceneGroup = new DefaultEventExecutorGroup(1);
+    private final DefaultEventExecutorGroup sceneGroup = new DefaultEventExecutorGroup(4);
 
     private final ConcurrentMap<Long, EventExecutor> playerExecutors = new ConcurrentHashMap<>();
     private final ConcurrentMap<Long, EventExecutor> sceneExecutors = new ConcurrentHashMap<>();
