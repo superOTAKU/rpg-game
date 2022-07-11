@@ -7,4 +7,6 @@ public interface PlayerMapper {
 
     int insert(Player player);
 
+    Player selectByAccountId(String accountId);
+
 }

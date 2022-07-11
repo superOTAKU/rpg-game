@@ -28,7 +28,7 @@ public class DatabaseManager {
     private SqlSessionFactory sessionFactory;
 
     //执行查询，返回future
-    public <V> Future<V> executeQuery(Function<SqlSession, V> queryFunc) {
+    public <V> Future<V> executeQueryAsync(Function<SqlSession, V> queryFunc) {
         return readExecutorGroup.submit(() -> {
             try (var session = sessionFactory.openSession(true)) {
                 return queryFunc.apply(session);
@@ -38,7 +38,7 @@ public class DatabaseManager {
 
     //执行查询，可通过promise获取结果
     @SuppressWarnings("unchecked")
-    public <V> void executeQuery(Function<SqlSession, V> queryFunc, Promise<V> promise) {
+    public <V> void executeQueryAsync(Function<SqlSession, V> queryFunc, Promise<V> promise) {
         readExecutorGroup.submit(() -> {
             try (var session = sessionFactory.openSession(true)) {
                 return queryFunc.apply(session);
@@ -52,7 +52,7 @@ public class DatabaseManager {
         });
     }
 
-    public Future<?> executeWrite(Consumer<SqlSession> writeFunc) {
+    public Future<?> executeWriteAsync(Consumer<SqlSession> writeFunc) {
         return writeExecutor.submit(() -> {
             try (var session = sessionFactory.openSession(true)) {
                 writeFunc.accept(session);
@@ -60,7 +60,7 @@ public class DatabaseManager {
         });
     }
 
-    public void executeWrite(Consumer<SqlSession> writeFunc, Promise<Void> promise) {
+    public void executeWriteAsync(Consumer<SqlSession> writeFunc, Promise<Void> promise) {
          writeExecutor.submit(() -> {
             try (var session = sessionFactory.openSession(true)) {
                 writeFunc.accept(session);
@@ -72,6 +72,20 @@ public class DatabaseManager {
                 promise.setFailure(f.cause());
             }
          });
+    }
+
+    public void executeSync(Consumer<SqlSession> consumer) {
+        try (var session = sessionFactory.openSession(true)) {
+            consumer.accept(session);
+        }
+    }
+
+    public SqlSession openSession() {
+        return sessionFactory.openSession(true);
+    }
+
+    public SqlSession openSession(boolean autoCommit) {
+        return sessionFactory.openSession(autoCommit);
     }
 
     public void init(DatabaseConfig config) {

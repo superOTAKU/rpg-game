@@ -1,12 +1,15 @@
 package org.summer.game.player;
 
+import lombok.Data;
+import org.summer.database.entity.Player;
 import org.summer.net.GameSession;
 
 /**
  * 玩家在内存中的数据结构
  */
-public class Player {
+@Data
+public class PlayerCache {
     private Long id;
-    private String nickname;
+    private Player player;
     private GameSession session;
 }
