@@ -51,10 +51,7 @@ public class PlayerCache {
     }
 
     public void clearMe() {
-        Executors.getInstance().getLoginExecutor().submit(() -> {
-            session.close();
-            PlayerCacheManager.getInstance().removeByAccountId(accountId);
-        });
+        Executors.getInstance().getLoginExecutor().submit(() -> session.close());
     }
 
 }
