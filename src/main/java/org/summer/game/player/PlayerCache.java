@@ -3,6 +3,7 @@ package org.summer.game.player;
 import io.netty.util.concurrent.EventExecutor;
 import lombok.Data;
 import org.summer.database.entity.Player;
+import org.summer.database.entity.PlayerState;
 import org.summer.game.Executors;
 import org.summer.net.GameSession;
 import org.summer.net.dto.LoginRspPacket;
@@ -16,6 +17,8 @@ public class PlayerCache {
     private String accountId;
     private volatile PlayerCacheState state;
     private Player player;
+    //玩家的状态极大影响协议的处理，因此玩家状态作为volatile字段
+    private volatile PlayerState playerState;
     private volatile GameSession session;
 
     public enum PlayerCacheState {

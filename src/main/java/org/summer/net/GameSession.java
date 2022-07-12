@@ -17,6 +17,7 @@ public class GameSession {
     }
 
     public enum SessionState {
+        //等待登录
         PENDING_LOGIN,
         LOADING_LOGIN_DATA,
         ACTIVE
