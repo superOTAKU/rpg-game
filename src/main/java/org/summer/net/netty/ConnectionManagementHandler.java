@@ -4,10 +4,12 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.timeout.IdleStateEvent;
+import lombok.extern.slf4j.Slf4j;
 import org.summer.game.Executors;
 import org.summer.net.GameSession;
 import org.summer.net.GameSessionManager;
 
+@Slf4j
 public class ConnectionManagementHandler extends ChannelInboundHandlerAdapter {
 
     @Override
@@ -15,6 +17,7 @@ public class ConnectionManagementHandler extends ChannelInboundHandlerAdapter {
         Channel channel = ctx.channel();
         //新增session直接IO线程操作
         GameSessionManager.getInstance().addSession(ctx.channel(), new GameSession(channel));
+        log.info("channel {} connected", channel);
     }
 
     @Override

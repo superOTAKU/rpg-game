@@ -8,7 +8,7 @@
     </select>
 
     <insert id="insert" parameterType="org.summer.database.entity.Player">
-        insert into `player`(id, nickname) values(#{id}, #{nickname})
+        insert into `player`(`id`, `account_id`, `vocation`, `state`) values(#{id}, #{accountId}, #{vocation}, #{state})
     </insert>
 
     <select id="selectByAccountId" resultType="org.summer.database.entity.Player">

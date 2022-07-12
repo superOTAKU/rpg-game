@@ -2,6 +2,8 @@ package org.summer.net.packet;
 
 import io.netty.buffer.ByteBuf;
 
+import java.util.Arrays;
+
 /**
  * 通讯数据包
  */
@@ -64,4 +66,12 @@ public class Packet {
         return packet;
     }
 
+    @Override
+    public String toString() {
+        return "Packet{" +
+                "code=" + code +
+                ", clientSequence=" + clientSequence +
+                ", payloadLen=" + payload.length +
+                '}';
+    }
 }

@@ -136,16 +136,4 @@ public class DatabaseManager {
         return INSTANCE;
     }
 
-    public static void main(String[] args) {
-        DatabaseConfig config = new DatabaseConfig();
-        config.setUrl("jdbc:mysql://localhost:3306/rpg_game?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8");
-        config.setUsername("root");
-        config.setPassword("root");
-        config.setMaxConnCount(10);
-        config.setIdleConnCount(5);
-        DatabaseManager.getInstance().init(config);
-        DatabaseManager.getInstance().shutdown();
-
-    }
-
 }

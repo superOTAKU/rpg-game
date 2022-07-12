@@ -13,6 +13,7 @@ public class GameSession {
 
     public GameSession(Channel channel) {
         this.channel = channel;
+        this.state = SessionState.PENDING_LOGIN;
     }
 
     public enum SessionState {

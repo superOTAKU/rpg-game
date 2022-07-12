@@ -8,4 +8,5 @@ public class Player {
     private String accountId;
     private String nickname;
     private VocationType vocation;
+    private PlayerState state;
 }

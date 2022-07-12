@@ -1,9 +1,11 @@
 package org.summer.net.handler.impl;
 
 import io.netty.util.concurrent.EventExecutor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.summer.database.IdGenerator;
 import org.summer.database.entity.Player;
+import org.summer.database.entity.PlayerState;
 import org.summer.database.entity.VocationType;
 import org.summer.game.Executors;
 import org.summer.game.player.PlayerCache;
@@ -16,12 +18,12 @@ import org.summer.net.GameSessionManager;
 import org.summer.net.OpCode;
 import org.summer.net.OperationCodes;
 import org.summer.net.dto.LoginReq;
-import org.summer.net.dto.LoginRsp;
 import org.summer.net.dto.LoginRspPacket;
 import org.summer.net.handler.PacketHandler;
 import org.summer.net.packet.Packet;
 import org.summer.util.JacksonUtil;
 
+@Slf4j
 @OpCode(code = OperationCodes.LOGIN)
 public class LoginHandler implements PacketHandler {
 
@@ -46,7 +48,7 @@ public class LoginHandler implements PacketHandler {
             //token不存在，先走http设置好token
             return;
         }
-        if (token.getExpiredMillis() > System.currentTimeMillis()) {
+        if (token.getExpiredMillis() < System.currentTimeMillis()) {
             //token过期
             return;
         }
@@ -75,6 +77,7 @@ public class LoginHandler implements PacketHandler {
                 player.setId(IdGenerator.getInstance().nextId());
                 player.setAccountId(accountId);
                 player.setVocation(VocationType.NONE);
+                player.setState(PlayerState.PENDING_INFO);
                 PlayerService.getInstance().createPlayer(player);
             }
             playerCache = new PlayerCache();
@@ -95,6 +98,7 @@ public class LoginHandler implements PacketHandler {
         }
         //回包告知客户端登录成功
         session.sendPacket(new LoginRspPacket(playerCache));
+        log.info("player {} login success", playerCache.getPlayerId());
     }
 
 }
