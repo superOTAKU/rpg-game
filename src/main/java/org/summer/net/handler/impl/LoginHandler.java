@@ -16,6 +16,7 @@ import org.summer.net.GameSessionManager;
 import org.summer.net.OpCode;
 import org.summer.net.OperationCodes;
 import org.summer.net.dto.LoginReq;
+import org.summer.net.dto.LoginRsp;
 import org.summer.net.dto.LoginRspPacket;
 import org.summer.net.handler.PacketHandler;
 import org.summer.net.packet.Packet;
@@ -58,8 +59,10 @@ public class LoginHandler implements PacketHandler {
                 //重复登录，理论上不应该出现
                 return;
             } else {
-                //踢掉旧session
-                oldSession.kick();
+                //通知客户端被挤下线
+                oldSession.sendPacket(Packet.of(OperationCodes.KICK));
+                //关闭旧session
+                oldSession.close();
             }
         }
         PlayerCache playerCache = PlayerCacheManager.getInstance().getByAccountId(token.getAccountId());
@@ -91,7 +94,7 @@ public class LoginHandler implements PacketHandler {
             session.setState(GameSession.SessionState.ACTIVE);
         }
         //回包告知客户端登录成功
-        session.sendPacket(new LoginRspPacket(playerCache.getPlayerId(), session.getState(), packet.getClientSequence()));
+        session.sendPacket(new LoginRspPacket(playerCache));
     }
 
 }

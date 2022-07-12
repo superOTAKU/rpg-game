@@ -58,4 +58,10 @@ public class Packet {
         return packet;
     }
 
+    public static Packet of(int code) {
+        Packet packet = new Packet();
+        packet.setCode(1);
+        return packet;
+    }
+
 }

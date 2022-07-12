@@ -13,12 +13,14 @@ public class ConnectionManagementHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         Channel channel = ctx.channel();
-        Executors.getInstance().getLoginExecutor().execute(() -> GameSessionManager.getInstance().addSession(ctx.channel(), new GameSession(channel)));
+        //新增session直接IO线程操作
+        GameSessionManager.getInstance().addSession(ctx.channel(), new GameSession(channel));
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
         Channel channel = ctx.channel();
+        //移除session在登录线程做
         Executors.getInstance().getLoginExecutor().execute(() -> GameSessionManager.getInstance().removeSession(channel));
     }
 

@@ -1,12 +1,13 @@
 package org.summer.net;
 
 import io.netty.channel.Channel;
+import io.netty.util.concurrent.EventExecutor;
+import org.summer.game.Executors;
 import org.summer.game.player.PlayerCache;
 import org.summer.net.packet.Packet;
 
 public class GameSession {
     private final Channel channel;
-    private String accountId;
     private volatile SessionState state;
     private volatile PlayerCache player;
 
@@ -36,12 +37,26 @@ public class GameSession {
         this.player = player;
     }
 
-    public void kick() {
-
+    public String getAccountId() {
+        if (player != null) {
+            return player.getAccountId();
+        } else {
+            return null;
+        }
     }
 
-    public void close() {
+    public EventExecutor playerExecutor() {
+        if (player != null) {
+            return Executors.getInstance().getPlayerExecutor(player.getPlayerId());
+        } else {
+            return null;
+        }
+    }
 
+
+    public void close() {
+        //TODO 如果有其他业务需要关闭连接前做，这里先做
+        channel.close();
     }
 
     public void sendPacket(Packet packet) {
