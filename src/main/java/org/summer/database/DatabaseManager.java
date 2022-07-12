@@ -74,10 +74,22 @@ public class DatabaseManager {
          });
     }
 
-    public <T> T executeSync(Function<SqlSession, T> consumer) {
+    public void run(Consumer<SqlSession> task) {
         try (var session = sessionFactory.openSession(true)) {
-            return consumer.apply(session);
+            task.accept(session);
         }
+    }
+
+    public <T> T supply(Function<SqlSession, T> supplier) {
+        try (var session = sessionFactory.openSession(true)) {
+            return supplier.apply(session);
+        }
+    }
+
+    public <T> Future<T> supplyAsync(Function<SqlSession, T> supplier) {
+        return readExecutorGroup.submit(() -> {
+           return supply(supplier);
+        });
     }
 
     public SqlSession openSession() {

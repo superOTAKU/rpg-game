@@ -10,7 +10,7 @@ import org.summer.net.packet.Packet;
 public class UpdateNickName implements PacketHandler {
     @Override
     public EventExecutor getEventExecutor(GameSession session, Packet packet) {
-        return Executors.getInstance().getPlayerExecutor(session.getPlayer().getId());
+        return Executors.getInstance().getPlayerExecutor(session.getPlayer().getPlayerId());
     }
 
     @Override

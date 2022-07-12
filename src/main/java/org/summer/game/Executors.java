@@ -3,6 +3,7 @@ package org.summer.game;
 import io.netty.util.concurrent.DefaultEventExecutor;
 import io.netty.util.concurrent.DefaultEventExecutorGroup;
 import io.netty.util.concurrent.EventExecutor;
+import io.netty.util.concurrent.EventExecutorGroup;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -15,6 +16,8 @@ public class Executors {
     private final DefaultEventExecutorGroup sceneGroup = new DefaultEventExecutorGroup(4);
     //一条线程用于登录
     private final DefaultEventExecutor loginExecutor = new DefaultEventExecutor();
+    //公共线程池，全局执行一些异步逻辑
+    private final DefaultEventExecutorGroup commonGroup = new DefaultEventExecutorGroup(8);
 
     private final ConcurrentMap<Long, EventExecutor> playerExecutors = new ConcurrentHashMap<>();
     private final ConcurrentMap<Long, EventExecutor> sceneExecutors = new ConcurrentHashMap<>();
@@ -39,6 +42,10 @@ public class Executors {
 
     public EventExecutor getLoginExecutor() {
         return loginExecutor;
+    }
+
+    public EventExecutorGroup getCommonGroup() {
+        return commonGroup;
     }
 
     private static final Executors INSTANCE = new Executors();

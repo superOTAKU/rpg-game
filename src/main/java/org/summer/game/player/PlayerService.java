@@ -8,7 +8,11 @@ import org.summer.database.mapper.PlayerMapper;
 public class PlayerService {
 
     public Player selectByAccountId(String accountId) {
-        return DatabaseManager.getInstance().executeSync(sqlSession -> sqlSession.getMapper(PlayerMapper.class).selectByAccountId(accountId));
+        return DatabaseManager.getInstance().supply(sqlSession -> sqlSession.getMapper(PlayerMapper.class).selectByAccountId(accountId));
+    }
+
+    public void createPlayer(Player player) {
+        DatabaseManager.getInstance().run(sqlSession -> sqlSession.getMapper(PlayerMapper.class).insert(player));
     }
 
     private static final PlayerService INSTANCE = new PlayerService();

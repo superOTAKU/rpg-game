@@ -2,9 +2,9 @@ package org.summer.net.handler.impl;
 
 import io.netty.util.concurrent.EventExecutor;
 import org.apache.commons.lang3.StringUtils;
-import org.summer.database.DatabaseManager;
+import org.summer.database.IdGenerator;
 import org.summer.database.entity.Player;
-import org.summer.database.mapper.PlayerMapper;
+import org.summer.database.entity.VocationType;
 import org.summer.game.Executors;
 import org.summer.game.player.PlayerCache;
 import org.summer.game.player.PlayerCacheManager;
@@ -16,8 +16,10 @@ import org.summer.net.GameSessionManager;
 import org.summer.net.OpCode;
 import org.summer.net.OperationCodes;
 import org.summer.net.dto.LoginReq;
+import org.summer.net.dto.LoginRspPacket;
 import org.summer.net.handler.PacketHandler;
 import org.summer.net.packet.Packet;
+import org.summer.util.JacksonUtil;
 
 @OpCode(code = OperationCodes.LOGIN)
 public class LoginHandler implements PacketHandler {
@@ -33,7 +35,7 @@ public class LoginHandler implements PacketHandler {
             //session状态
             return;
         }
-        LoginReq req = LoginReq.parse(packet);
+        LoginReq req = JacksonUtil.getPayload(packet, LoginReq.class);
         if (req == null || StringUtils.isBlank(req.getToken())) {
             //参数不合法
             return;
@@ -49,12 +51,16 @@ public class LoginHandler implements PacketHandler {
         }
         String accountId = token.getAccountId();
         GameSession oldSession = GameSessionManager.getInstance().getSessionByAccountId(accountId);
-        if (oldSession == session) {
-            //重复登录，理论上不应该出现
-            return;
+        if (oldSession == null) {
+            GameSessionManager.getInstance().bindAccount(accountId, session);
         } else {
-            //踢掉旧session
-            oldSession.kick();
+            if (oldSession == session) {
+                //重复登录，理论上不应该出现
+                return;
+            } else {
+                //踢掉旧session
+                oldSession.kick();
+            }
         }
         PlayerCache playerCache = PlayerCacheManager.getInstance().getByAccountId(token.getAccountId());
         if (playerCache == null) {
@@ -62,19 +68,30 @@ public class LoginHandler implements PacketHandler {
             Player player = PlayerService.getInstance().selectByAccountId(accountId);
             if (player == null) {
                 //创建Player
+                player = new Player();
+                player.setId(IdGenerator.getInstance().nextId());
+                player.setAccountId(accountId);
+                player.setVocation(VocationType.NONE);
+                PlayerService.getInstance().createPlayer(player);
             }
+            playerCache = new PlayerCache();
+            playerCache.setAccountId(accountId);
+            playerCache.setPlayerId(player.getId());
+            playerCache.setPlayer(player);
+            playerCache.setState(PlayerCache.PlayerCacheState.INIT);
         }
-        //加载player数据
-        DatabaseManager.getInstance().executeQueryAsync(sqlSession -> {
-            //查一堆
-            return null;
-        }).addListener(f -> {
-           //保存信息到cache
-           Executors.getInstance().getPlayerExecutor(playerCache.getId()).execute(() -> {
-               PlayerCache p = PlayerCacheManager.getInstance().getByAccountId(accountId);
-               p.setPlayer((Player)f.getNow());
-           });
-        });
+        playerCache.setSession(session);
+        session.setPlayer(playerCache);
+        if (playerCache.getState() == PlayerCache.PlayerCacheState.INIT || playerCache.getState() == PlayerCache.PlayerCacheState.LOADING) {
+            if (playerCache.getState() == PlayerCache.PlayerCacheState.INIT) {
+                playerCache.startLoginLoading();
+            }
+            session.setState(GameSession.SessionState.LOADING_LOGIN_DATA);
+        } else if (playerCache.getState() == PlayerCache.PlayerCacheState.ACTIVE) {
+            session.setState(GameSession.SessionState.ACTIVE);
+        }
+        //回包告知客户端登录成功
+        session.sendPacket(new LoginRspPacket(playerCache.getPlayerId(), session.getState(), packet.getClientSequence()));
     }
 
 }

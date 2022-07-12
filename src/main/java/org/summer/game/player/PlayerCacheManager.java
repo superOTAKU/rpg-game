@@ -11,6 +11,10 @@ public class PlayerCacheManager {
         return accountPlayerMap.get(accountId);
     }
 
+    public void removeByAccountId(String accountId) {
+        accountPlayerMap.remove(accountId);
+    }
+
     private static final PlayerCacheManager INSTANCE = new PlayerCacheManager();
     public static PlayerCacheManager getInstance() {
         return INSTANCE;

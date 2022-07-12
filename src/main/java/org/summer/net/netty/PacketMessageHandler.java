@@ -13,7 +13,7 @@ public class PacketMessageHandler extends SimpleChannelInboundHandler<Packet> {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Packet packet) {
         GameSession session = GameSessionManager.getInstance().getSession(ctx);
-        PacketHandler handler = PacketHandlerRegistry.getInstance().getHandler(packet.getHeader().getCode());
+        PacketHandler handler = PacketHandlerRegistry.getInstance().getHandler(packet.getCode());
         //TODO 判断消息是否可处理
         GameSession.SessionState state = session.getState();
         handler.getEventExecutor(session, packet).execute(() -> handler.handle(session, packet));

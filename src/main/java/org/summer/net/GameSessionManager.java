@@ -26,6 +26,20 @@ public class GameSessionManager {
         sessionMap.put(channel, session);
     }
 
+    public void bindAccount(String accountId, GameSession session) {
+        accountSessionMap.put(accountId, session);
+    }
+
+    public void removeSession(Channel channel) {
+        GameSession session = sessionMap.remove(channel);
+        if (session != null) {
+            if (session.getPlayer() != null) {
+                accountSessionMap.remove(session.getPlayer().getAccountId());
+                session.getPlayer().setSession(null);
+            }
+        }
+    }
+
     //singleton
     private static final GameSessionManager INSTANCE = new GameSessionManager();
     public static GameSessionManager getInstance() {
