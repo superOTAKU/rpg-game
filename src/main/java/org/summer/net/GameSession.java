@@ -2,14 +2,18 @@ package org.summer.net;
 
 import io.netty.channel.Channel;
 import io.netty.util.concurrent.EventExecutor;
+import org.summer.database.entity.Player;
+import org.summer.database.entity.PlayerState;
 import org.summer.game.Executors;
 import org.summer.game.player.PlayerCache;
 import org.summer.net.packet.Packet;
 
+import java.util.Optional;
+
 public class GameSession {
     private final Channel channel;
     private volatile SessionState state;
-    private volatile PlayerCache player;
+    private volatile PlayerCache playerCache;
 
     public GameSession(Channel channel) {
         this.channel = channel;
@@ -31,30 +35,34 @@ public class GameSession {
         this.state = state;
     }
 
-    public PlayerCache getPlayer() {
-        return player;
+    public PlayerCache playerCache() {
+        return playerCache;
     }
 
-    public void setPlayer(PlayerCache player) {
-        this.player = player;
+    public void setPlayerCache(PlayerCache player) {
+        this.playerCache = player;
     }
 
-    public String getAccountId() {
-        if (player != null) {
-            return player.getAccountId();
-        } else {
-            return null;
-        }
+    public Player playerEntity() {
+        return Optional.ofNullable(playerCache).map(PlayerCache::getPlayer).orElse(null);
+    }
+
+    public String accountId() {
+        return Optional.ofNullable(playerCache).map(PlayerCache::getAccountId).orElse(null);
+    }
+
+    public Long playerId() {
+        return Optional.ofNullable(playerCache).map(PlayerCache::getPlayerId).orElse(null);
     }
 
     public EventExecutor playerExecutor() {
-        if (player != null) {
-            return Executors.getInstance().getPlayerExecutor(player.getPlayerId());
-        } else {
-            return null;
-        }
+        return Optional.ofNullable(playerCache).map(PlayerCache::getPlayerId)
+                .map(Executors.getInstance()::getPlayerExecutor).orElse(null);
     }
 
+    public PlayerState playerState() {
+        return Optional.ofNullable(playerCache).map(PlayerCache::getPlayerState).orElse(null);
+    }
 
     public void close() {
         //TODO 如果有其他业务需要关闭连接前做，这里先做

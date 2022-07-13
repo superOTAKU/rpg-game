@@ -3,6 +3,7 @@ package org.summer.net.netty;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
+import org.summer.database.entity.PlayerState;
 import org.summer.net.GameSession;
 import org.summer.net.GameSessionManager;
 import org.summer.net.OperationCodes;
@@ -36,7 +37,25 @@ public class PacketMessageHandler extends SimpleChannelInboundHandler<Packet> {
                 if (packet.getCode() == OperationCodes.LOGIN) {
                     return;
                 } else {
-                    break;
+                    if (session.playerState() == PlayerState.PENDING_INFO) {
+                        if (packet.getCode() != OperationCodes.SUPPLY_PLAYER_INFO) {
+                            return;
+                        } else {
+                            break;
+                        }
+                    } else if (session.playerState() == PlayerState.PENDING_VOCATION) {
+                        if (packet.getCode() != OperationCodes.SELECT_VOCATION) {
+                            return;
+                        } else {
+                            break;
+                        }
+                    } else if (session.playerState() == PlayerState.NORMAL) {
+                        if (packet.getCode() != OperationCodes.SUPPLY_PLAYER_INFO && packet.getCode() != OperationCodes.SELECT_VOCATION) {
+                            break;
+                        } else {
+                            return;
+                        }
+                    }
                 }
         }
         handler.getEventExecutor(session, packet).execute(() -> {

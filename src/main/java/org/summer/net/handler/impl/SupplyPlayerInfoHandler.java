@@ -14,8 +14,6 @@ import org.summer.net.handler.PacketHandler;
 import org.summer.net.packet.Packet;
 import org.summer.util.JacksonUtil;
 
-import java.util.Objects;
-
 @OpCode(code = OperationCodes.SUPPLY_PLAYER_INFO)
 public class SupplyPlayerInfoHandler implements PacketHandler {
 
@@ -26,20 +24,21 @@ public class SupplyPlayerInfoHandler implements PacketHandler {
 
     @Override
     public void handle(GameSession session, Packet packet) {
-        if (session.getPlayer().getPlayer().getState() != PlayerState.PENDING_INFO) {
+        if (session.playerCache().getPlayer().getState() != PlayerState.PENDING_INFO) {
             return;
         }
         SupplyPlayerInfoReq req = JacksonUtil.getPayload(packet, SupplyPlayerInfoReq.class);
         if (StringUtils.isBlank(req.getNickname())) {
             return;
         }
-        boolean flag = NickNameManager.getInstance().allocateName(session.getPlayer().getPlayerId(), req.getNickname());
-        if (flag) {
-            session.getPlayer().getPlayer().setNickname(req.getNickname());
-            session.getPlayer().getPlayer().setState(PlayerState.PENDING_VOCATION);
+        boolean allocateResult = NickNameManager.getInstance().allocateName(session.playerId(), req.getNickname());
+        if (allocateResult) {
+            session.playerEntity().setNickname(req.getNickname());
+            session.playerCache().setPlayerState(PlayerState.PENDING_VOCATION);
             DatabaseManager.getInstance().executeWriteAsync(sqlSession ->
-                    sqlSession.getMapper(PlayerMapper.class).updateNickname(session.getPlayer().getPlayerId(), req.getNickname(), PlayerState.PENDING_VOCATION));
+                    sqlSession.getMapper(PlayerMapper.class).updateNickname(session.playerId(), req.getNickname(), PlayerState.PENDING_VOCATION));
             session.sendPacket(Packet.of(OperationCodes.SUPPLY_PLAYER_INFO));
         }
     }
+
 }

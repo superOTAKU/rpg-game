@@ -87,7 +87,7 @@ public class LoginHandler implements PacketHandler {
             playerCache.setState(PlayerCache.PlayerCacheState.INIT);
         }
         playerCache.setSession(session);
-        session.setPlayer(playerCache);
+        session.setPlayerCache(playerCache);
         if (playerCache.getState() == PlayerCache.PlayerCacheState.INIT || playerCache.getState() == PlayerCache.PlayerCacheState.LOADING) {
             if (playerCache.getState() == PlayerCache.PlayerCacheState.INIT) {
                 playerCache.startLoginLoading();

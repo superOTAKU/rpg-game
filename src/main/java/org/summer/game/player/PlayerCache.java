@@ -21,6 +21,11 @@ public class PlayerCache {
     private volatile PlayerState playerState;
     private volatile GameSession session;
 
+    public void setPlayer(Player player) {
+        this.player = player;
+        this.playerState = player.getState();
+    }
+
     public enum PlayerCacheState {
         INIT, LOADING, ACTIVE
     }
@@ -31,6 +36,11 @@ public class PlayerCache {
         } else {
             return Executors.getInstance().getPlayerExecutor(playerId);
         }
+    }
+
+    public void setPlayerState(PlayerState playerState) {
+        this.playerState = playerState;
+        player.setState(playerState);
     }
 
     public void startLoginLoading() {

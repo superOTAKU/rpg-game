@@ -33,9 +33,9 @@ public class GameSessionManager {
     public void removeSession(Channel channel) {
         GameSession session = sessionMap.remove(channel);
         if (session != null) {
-            if (session.getAccountId() != null) {
-                accountSessionMap.remove(session.getAccountId());
-                session.getPlayer().setSession(null);
+            if (session.accountId() != null) {
+                accountSessionMap.remove(session.accountId());
+                session.playerCache().setSession(null);
             }
         }
     }
