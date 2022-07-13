@@ -28,7 +28,7 @@ public class SelectVocationHandler implements PacketHandler {
         DatabaseManager.getInstance().executeWriteAsync(sqlSession -> {
             sqlSession.getMapper(PlayerMapper.class).updateVocation(session.playerId(), req.getVocation(), PlayerState.NORMAL);
         });
-        session.sendPacket(PacketFactory.okJson(OperationCodes.SELECT_VOCATION));
+        session.sendPacket(PacketFactory.okRspJson(packet));
     }
 
 }

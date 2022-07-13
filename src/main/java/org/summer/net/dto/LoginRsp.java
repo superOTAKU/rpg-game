@@ -1,8 +1,12 @@
 package org.summer.net.dto;
 
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.summer.net.GameSession;
 
+@NoArgsConstructor
+@Builder
 @Data
 public class LoginRsp {
     private Long playerId;

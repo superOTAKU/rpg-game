@@ -15,7 +15,7 @@ import org.summer.login.LoginTokenManager;
 import org.summer.login.Token;
 import org.summer.net.*;
 import org.summer.net.dto.LoginReq;
-import org.summer.net.dto.LoginRspPacket;
+import org.summer.net.dto.LoginRsp;
 import org.summer.net.handler.PacketHandler;
 import org.summer.net.packet.Packet;
 import org.summer.net.packet.PacketFactory;
@@ -95,7 +95,11 @@ public class LoginHandler implements PacketHandler {
             session.setState(GameSession.SessionState.ACTIVE);
         }
         //回包告知客户端登录成功
-        session.sendPacket(new LoginRspPacket(playerCache));
+        session.sendPacket(PacketFactory.okRspJson(packet,
+                LoginRsp.builder()
+                        .playerId(playerCache.getPlayerId())
+                        .state(session.getState())
+                        .build()));
         log.info("player {} login success", playerCache.getPlayerId());
     }
 

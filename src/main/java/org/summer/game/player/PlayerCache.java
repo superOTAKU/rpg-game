@@ -6,7 +6,10 @@ import org.summer.database.entity.Player;
 import org.summer.database.entity.PlayerState;
 import org.summer.game.Executors;
 import org.summer.net.GameSession;
-import org.summer.net.dto.LoginRspPacket;
+import org.summer.net.OperationCodes;
+import org.summer.net.dto.LoginRsp;
+import org.summer.net.packet.Packet;
+import org.summer.net.packet.PacketFactory;
 
 /**
  * 玩家在内存中的数据结构
@@ -54,7 +57,12 @@ public class PlayerCache {
                //登录线程设置session状态
                Executors.getInstance().getLoginExecutor().execute(() -> {
                    session.setState(GameSession.SessionState.ACTIVE);
-                   session.sendPacket(new LoginRspPacket(this));
+                   session.sendPacket(PacketFactory.okJson(OperationCodes.LOGIN,
+                           Packet.NON_SEQUENCE,
+                           LoginRsp.builder()
+                            .playerId(playerId)
+                           .state(session.getState())
+                           .build()));
                });
            } else {
                //登录失败，clear everything...
