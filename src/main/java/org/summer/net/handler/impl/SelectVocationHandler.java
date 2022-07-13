@@ -10,6 +10,7 @@ import org.summer.net.OperationCodes;
 import org.summer.net.dto.SelectVocationReq;
 import org.summer.net.handler.PacketHandler;
 import org.summer.net.packet.Packet;
+import org.summer.net.packet.PacketFactory;
 import org.summer.util.JacksonUtil;
 
 @OpCode(code = OperationCodes.SELECT_VOCATION)
@@ -27,6 +28,7 @@ public class SelectVocationHandler implements PacketHandler {
         DatabaseManager.getInstance().executeWriteAsync(sqlSession -> {
             sqlSession.getMapper(PlayerMapper.class).updateVocation(session.playerId(), req.getVocation(), PlayerState.NORMAL);
         });
+        session.sendPacket(PacketFactory.okJson(OperationCodes.SELECT_VOCATION));
     }
 
 }

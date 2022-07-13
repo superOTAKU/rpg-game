@@ -13,14 +13,12 @@ import org.summer.game.player.PlayerCacheManager;
 import org.summer.game.player.PlayerService;
 import org.summer.login.LoginTokenManager;
 import org.summer.login.Token;
-import org.summer.net.GameSession;
-import org.summer.net.GameSessionManager;
-import org.summer.net.OpCode;
-import org.summer.net.OperationCodes;
+import org.summer.net.*;
 import org.summer.net.dto.LoginReq;
 import org.summer.net.dto.LoginRspPacket;
 import org.summer.net.handler.PacketHandler;
 import org.summer.net.packet.Packet;
+import org.summer.net.packet.PacketFactory;
 import org.summer.util.JacksonUtil;
 
 @Slf4j
@@ -62,7 +60,7 @@ public class LoginHandler implements PacketHandler {
                 return;
             } else {
                 //通知客户端被挤下线
-                oldSession.sendPacket(Packet.of(OperationCodes.KICK));
+                oldSession.sendPacket(PacketFactory.errJson(OperationCodes.KICK, ErrorCodes.USER_KICK));
                 //关闭旧session
                 oldSession.close();
             }

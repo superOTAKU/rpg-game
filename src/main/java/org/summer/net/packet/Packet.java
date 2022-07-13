@@ -2,8 +2,6 @@ package org.summer.net.packet;
 
 import io.netty.buffer.ByteBuf;
 
-import java.util.Arrays;
-
 /**
  * 通讯数据包
  */
@@ -57,12 +55,6 @@ public class Packet {
         byte[] payload = new byte[len - 8];
         buf.readBytes(payload);
         packet.setPayload(payload);
-        return packet;
-    }
-
-    public static Packet of(int code) {
-        Packet packet = new Packet();
-        packet.setCode(1);
         return packet;
     }
 

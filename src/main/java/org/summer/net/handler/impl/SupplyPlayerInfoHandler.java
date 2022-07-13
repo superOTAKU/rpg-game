@@ -6,12 +6,14 @@ import org.summer.database.DatabaseManager;
 import org.summer.database.entity.PlayerState;
 import org.summer.database.mapper.PlayerMapper;
 import org.summer.game.player.NickNameManager;
+import org.summer.net.ErrorCodes;
 import org.summer.net.GameSession;
 import org.summer.net.OpCode;
 import org.summer.net.OperationCodes;
 import org.summer.net.dto.SupplyPlayerInfoReq;
 import org.summer.net.handler.PacketHandler;
 import org.summer.net.packet.Packet;
+import org.summer.net.packet.PacketFactory;
 import org.summer.util.JacksonUtil;
 
 @OpCode(code = OperationCodes.SUPPLY_PLAYER_INFO)
@@ -37,7 +39,9 @@ public class SupplyPlayerInfoHandler implements PacketHandler {
             session.playerCache().setPlayerState(PlayerState.PENDING_VOCATION);
             DatabaseManager.getInstance().executeWriteAsync(sqlSession ->
                     sqlSession.getMapper(PlayerMapper.class).updateNickname(session.playerId(), req.getNickname(), PlayerState.PENDING_VOCATION));
-            session.sendPacket(Packet.of(OperationCodes.SUPPLY_PLAYER_INFO));
+            session.sendPacket(PacketFactory.okRspJson(packet));
+        } else {
+            session.sendPacket(PacketFactory.errRspJson(packet, ErrorCodes.NICK_NAME_DUPLICATED));
         }
     }
 
