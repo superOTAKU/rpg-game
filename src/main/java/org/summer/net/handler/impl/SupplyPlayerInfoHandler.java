@@ -26,7 +26,7 @@ public class SupplyPlayerInfoHandler implements PacketHandler {
 
     @Override
     public void handle(GameSession session, Packet packet) {
-        if (session.playerCache().getPlayer().getState() != PlayerState.PENDING_INFO) {
+        if (session.playerState() != PlayerState.PENDING_INFO) {
             return;
         }
         SupplyPlayerInfoReq req = JacksonUtil.getPayload(packet, SupplyPlayerInfoReq.class);
