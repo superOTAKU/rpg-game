@@ -2,10 +2,9 @@ package org.summer.net.handler.impl;
 
 import io.netty.util.concurrent.EventExecutor;
 import org.apache.commons.lang3.StringUtils;
-import org.summer.database.DatabaseManager;
 import org.summer.database.entity.PlayerState;
-import org.summer.database.mapper.PlayerMapper;
 import org.summer.game.player.NickNameManager;
+import org.summer.game.player.PlayerService;
 import org.summer.net.ErrorCodes;
 import org.summer.net.GameSession;
 import org.summer.net.OpCode;
@@ -37,8 +36,7 @@ public class SupplyPlayerInfoHandler implements PacketHandler {
         if (allocateResult) {
             session.playerEntity().setNickname(req.getNickname());
             session.playerCache().setPlayerState(PlayerState.PENDING_VOCATION);
-            DatabaseManager.getInstance().executeWriteAsync(sqlSession ->
-                    sqlSession.getMapper(PlayerMapper.class).updateNickname(session.playerId(), req.getNickname(), PlayerState.PENDING_VOCATION));
+            PlayerService.getInstance().setNickNameAsync(session.playerEntity());
             session.sendPacket(PacketFactory.okRspJson(packet));
         } else {
             session.sendPacket(PacketFactory.errRspJson(packet, ErrorCodes.NICK_NAME_DUPLICATED));

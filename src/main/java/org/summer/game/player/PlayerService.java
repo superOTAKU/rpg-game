@@ -15,6 +15,12 @@ public class PlayerService {
         DatabaseManager.getInstance().run(sqlSession -> sqlSession.getMapper(PlayerMapper.class).insert(player));
     }
 
+    public void setNickNameAsync(Player player) {
+        DatabaseManager.getInstance().executeWriteAsync(sqlSession -> {
+            sqlSession.getMapper(PlayerMapper.class).updateNickname(player.getId(), player.getNickname(), player.getState());
+        });
+    }
+
     private static final PlayerService INSTANCE = new PlayerService();
     public static PlayerService getInstance() {
         return INSTANCE;
