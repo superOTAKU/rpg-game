@@ -17,4 +17,8 @@ public class MapCeil {
     private Set<Long> newAddPlayers;
     //离开当前格子的玩家
     private Set<Long> removedPlayers;
+
+    public void addPlayer(Long playerId, Position pos) {
+
+    }
 }
